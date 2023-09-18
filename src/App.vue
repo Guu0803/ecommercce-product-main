@@ -1,5 +1,5 @@
 <template>
-  <div class="window" :style="darkenWindow()">
+  <div class="window" :style="darkenWindow()" v-on:click="closeCart()">
     <div class="header">
       <div class="header-left-container">
         <img src="@/assets/icon-menu.svg" alt="menu mobile" class="icone-menu-mobile" v-on:click="showMenu()">
@@ -24,16 +24,40 @@
       </div>
       <div class="user">
         <div class="container-dropdown">
-          <span class="material-icons car" v-on:click="showCart()">
+          <div class="cart-counter" v-if="cartUnit != 0">
+            {{ cartUnit }}
+          </div>
+          <span class="material-icons car" v-on:click.stop="showCart()">
             shopping_cart
           </span>
-
-          <div :style="cartStyle()">
+          <div :class="cartStyle()">
             <div class="cart-title">
               Cart
             </div>
             <div class="cart-content">
-              Your cart is empty
+              <div v-if="cartUnit === 0">
+                Your cart is empty
+              </div>
+              <div class="product-container" v-else>
+                <div class="product-in-cart">
+                  <img src="@/assets/image-product-1-thumbnail.jpg" class="product-thumb">
+                  <div>
+                    Fall Limited Edition Sneakers
+                    <div class="total-sum">
+                      $125.00 x {{cartUnit}} =
+                      <div class="total-price">
+                        ${{ total }}.00
+                      </div>
+                    </div>
+                  </div>
+                  <span class="material-icons delete" v-on:click.stop="deleteCart()">
+                    delete
+                  </span>
+                </div>
+                <button class="cart-btn">
+                  Checkout
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -83,7 +107,7 @@
             {{ unitCounter }}
             <img src="@/assets/icon-plus.svg" class="plus" v-on:click="btnPlus()">
           </div>
-          <button>
+          <button v-on:click="addToCart()">
             <span class="material-icons cart-button">
               add_shopping_cart
             </span>
@@ -98,26 +122,38 @@
 export default {
   data() {
     return {
-      cart: false,
+      visibleCart: false,
       menu: false,
       unitCounter: 0,
-      index: 0
+      index: 0,
+      cartUnit: 0,
+      total: 0
     }
   },
   methods: {
+    addToCart(){
+      this.cartUnit = this.unitCounter + this.cartUnit
+      this.total = this.cartUnit * 125.00
+      this.unitCounter = 0
+    },
+    deleteCart(){
+      this.cartUnit = 0
+    },
+    closeCart(){
+      this.visibleCart = false
+    },
     showCart() {
-      if (this.cart === false) {
-        this.cart = true
+      if (this.visibleCart === false) {
+        this.visibleCart = true
       } else {
-        this.cart = false
+        this.visibleCart = false
       }
     },
     cartStyle() {
-      if (this.cart === true) {
-        console.log('funfou')
-        return "background-color: white;width: 20vw;height: 30vh; box-shadow:5px 5px 10px #c1c1c1,-5px 5px 10px #c1c1c1,-5px 5px 10px #ffffff;position: absolute;top: 7vh;"
+      if (this.visibleCart === true) {
+        return "cart-style"
       } else {
-        return "display:none;"
+        return "no-style"
       }
     },
     showMenu() {
@@ -137,7 +173,7 @@ export default {
     },
     darkenWindow() {
       if (this.menu === true) {
-        return "background-color: rgba(0,0,0, 0.8)"
+        return "background-color: rgba(0,0,0, 0.8);"
       }
     },
     btnMinus() {
@@ -236,6 +272,21 @@ body {
   gap: 2vw;
 }
 
+.cart-style {
+  background-color: white;
+  width: 27vw;
+  height: 35vh;
+  box-shadow: 5px 5px 10px #c1c1c1, -5px 5px 10px #c1c1c1, -5px 5px 10px #ffffff;
+  position: absolute;
+  top: 7vh;
+  right: -8vw;
+  z-index: 2;
+}
+
+.no-style {
+  display: none;
+}
+
 .car {
   height: 4vh;
   padding: 0.5vh;
@@ -243,6 +294,7 @@ body {
   border-radius: 50%;
   color: hsl(220, 14%, 75%);
   font-size: 2em;
+  user-select: none;
 }
 
 .car:hover {
@@ -269,6 +321,62 @@ body {
   height: 75%;
   font-weight: 700;
   color: hsl(220, 14%, 75%);
+}
+
+.cart-counter {
+  padding: 0.1vh 0.8vh;
+  border-radius: 50%;
+  background-color: hsl(26, 100%, 55%);
+  color: white;
+  position: absolute;
+  right: 0;
+  top: -1vh;
+}
+
+.product-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-in-cart {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  padding: 1vw;
+}
+
+.product-thumb {
+  height: 10vh;
+  border-radius: 10px;
+}
+
+.total-sum {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+
+.total-price{
+  color: hsl(220, 13%, 13%);
+  font-weight: 700;
+}
+
+.delete {
+  font-size: 1.5em;
+  cursor: pointer;
+  height: fit-content;
+}
+
+.delete:hover {
+  color: hsl(26, 100%, 55%);
+  transition: ease-in-out;
+}
+
+.cart-btn {
+  width: 90%;
+  padding: 2vh 5vw;
+  height: 8vh;
 }
 
 .avatar {
@@ -320,7 +428,8 @@ body {
 }
 
 .preview:hover {
-  outline: 2px solid hsl(26, 100%, 55%);
+  opacity: .5;
+  outline: 3px solid hsl(26, 100%, 55%);
 }
 
 .product-info {
@@ -401,6 +510,7 @@ button {
   color: white;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1vw;
   font-weight: 400;
   font-size: 1em;
@@ -434,17 +544,6 @@ button:hover {
     height: 1.5em;
   }
 
-  /* .menu-mobile {
-    background-color: white;
-    width: 50%;
-    height: 100vh;
-    z-index: 2;
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 8vh 5vw;
-    
-  } */
   .close {
     position: absolute;
     top: 3vh;
@@ -471,6 +570,33 @@ button:hover {
   .car {
     font-size: 1.8em;
     margin-top: 1vh;
+  }
+
+  .cart-style {
+    width: 95vw;
+    height: 38vh;
+    right: -14vw;
+    top: 10vh;
+    box-shadow: none;
+    border-radius: 10px;
+  }
+
+  .cart-title {
+    padding: 3.5vh;
+  }
+
+  .cart-counter {
+    padding: 0 0.5vh;
+    top: 0.5vh;
+  }
+
+  .product-container{
+    width: 100%;
+    gap: 3vw;
+  }
+
+  .product-in-cart{
+    gap: 3vw;
   }
 
   .body {
@@ -546,5 +672,4 @@ button:hover {
     align-items: center;
     gap: 3vw;
   }
-}
-</style>
+}</style>
