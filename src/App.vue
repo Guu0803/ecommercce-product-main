@@ -44,7 +44,7 @@
                   <div>
                     Fall Limited Edition Sneakers
                     <div class="total-sum">
-                      $125.00 x {{cartUnit}} =
+                      $125.00 x {{ cartUnit }} =
                       <div class="total-price">
                         ${{ total }}.00
                       </div>
@@ -66,19 +66,23 @@
     </div>
     <div class="body">
       <div class="product-view">
-        <div class="big-card">
-          <img src="@/assets/icon-previous.svg" class="previous" v-on:click="previousProductMobile()">
-          <img src="@/assets/icon-next.svg" class="next" v-on:click="nextProductMobile()">
+        <div class="big-card" v-on:click.stop="openFullScreen()">
+          <img src="@/assets/icon-previous.svg" class="previous" v-on:click.stop="previousProductMobile()">
+          <img src="@/assets/icon-next.svg" class="next" v-on:click.stop="nextProductMobile()">
           <img src="@/assets/image-product-1.jpg" class="thumb-img" v-if="index === 0">
           <img src="@/assets/image-product-2.jpg" class="thumb-img" v-if="index === 1">
           <img src="@/assets/image-product-3.jpg" class="thumb-img" v-if="index === 2">
           <img src="@/assets/image-product-4.jpg" class="thumb-img" v-if="index === 3">
         </div>
         <div class="card-preview">
-          <img src="@/assets/image-product-1-thumbnail.jpg" class="preview" v-on:click="changeProduct1()">
-          <img src="@/assets/image-product-2-thumbnail.jpg" class="preview" v-on:click="changeProduct2()">
-          <img src="@/assets/image-product-3-thumbnail.jpg" class="preview" v-on:click="changeProduct3()">
-          <img src="@/assets/image-product-4-thumbnail.jpg" class="preview" v-on:click="changeProduct4()">
+          <img src="@/assets/image-product-1-thumbnail.jpg" class="preview" v-on:click="changeProduct1()"
+            :style="imgSelected1()">
+          <img src="@/assets/image-product-2-thumbnail.jpg" class="preview" v-on:click="changeProduct2()"
+            :style="imgSelected2()">
+          <img src="@/assets/image-product-3-thumbnail.jpg" class="preview" v-on:click="changeProduct3()"
+            :style="imgSelected3()">
+          <img src="@/assets/image-product-4-thumbnail.jpg" class="preview" v-on:click="changeProduct4()"
+            :style="imgSelected4()">
         </div>
       </div>
       <div class="product-info">
@@ -116,6 +120,33 @@
         </div>
       </div>
     </div>
+    <div class="container-full-screen" v-if="fullScreen === true">
+      <span class="material-icons close-full-screen" v-on:click="closeFullScreen()">
+        close
+      </span>
+      <div class="view">
+        <span class="material-icons next-full-screen" v-on:click="nextProduct()">
+          navigate_next
+        </span>
+        <span class="material-icons previous-full-screen" v-on:click="previousProduct()">
+          navigate_before
+        </span>
+        <img src="@/assets/image-product-1.jpg" class="thumb-img" v-if="indexFullScreen === 0">
+        <img src="@/assets/image-product-2.jpg" class="thumb-img" v-if="indexFullScreen === 1">
+        <img src="@/assets/image-product-3.jpg" class="thumb-img" v-if="indexFullScreen === 2">
+        <img src="@/assets/image-product-4.jpg" class="thumb-img" v-if="indexFullScreen === 3">
+        <div class="mini-view">
+          <img src="@/assets/image-product-1-thumbnail.jpg" class="preview" v-on:click="changeProduct1()"
+            :style="imgSelectedFullScreen1()">
+          <img src="@/assets/image-product-2-thumbnail.jpg" class="preview" v-on:click="changeProduct2()"
+            :style="imgSelectedFullScreen2()">
+          <img src="@/assets/image-product-3-thumbnail.jpg" class="preview" v-on:click="changeProduct3()"
+            :style="imgSelectedFullScreen3()">
+          <img src="@/assets/image-product-4-thumbnail.jpg" class="preview" v-on:click="changeProduct4()"
+            :style="imgSelectedFullScreen4()">
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -127,19 +158,27 @@ export default {
       unitCounter: 0,
       index: 0,
       cartUnit: 0,
-      total: 0
+      total: 0,
+      fullScreen: false,
+      indexFullScreen: 0
     }
   },
   methods: {
-    addToCart(){
+    openFullScreen() {
+      this.fullScreen = true
+    },
+    closeFullScreen() {
+      this.fullScreen = false
+    },
+    addToCart() {
       this.cartUnit = this.unitCounter + this.cartUnit
       this.total = this.cartUnit * 125.00
       this.unitCounter = 0
     },
-    deleteCart(){
+    deleteCart() {
       this.cartUnit = 0
     },
-    closeCart(){
+    closeCart() {
       this.visibleCart = false
     },
     showCart() {
@@ -183,16 +222,46 @@ export default {
       this.unitCounter++
     },
     changeProduct1() {
-      this.index = 0
+      if (this.fullScreen === false) {
+        this.index = 0
+      } else {
+        this.indexFullScreen = 0
+      }
     },
     changeProduct2() {
-      this.index = 1
+      if (this.fullScreen === false) {
+        this.index = 1
+      } else {
+        this.indexFullScreen = 1
+      }
     },
     changeProduct3() {
-      this.index = 2
+      if (this.fullScreen === false) {
+        this.index = 2
+      } else {
+        this.indexFullScreen = 2
+      }
     },
     changeProduct4() {
-      this.index = 3
+      if (this.fullScreen === false) {
+        this.index = 3
+      } else {
+        this.indexFullScreen = 3
+      }
+    },
+    nextProduct() {
+      if (this.indexFullScreen <= 2) {
+        this.indexFullScreen++
+      } else {
+        this.indexFullScreen = 0
+      }
+    },
+    previousProduct() {
+      if (this.indexFullScreen >= 1) {
+        this.indexFullScreen--
+      } else {
+        this.indexFullScreen = 3
+      }
     },
     nextProductMobile() {
       if (this.index <= 2) {
@@ -207,7 +276,47 @@ export default {
       } else {
         this.index = 3
       }
-    }
+    },
+    imgSelected1() {
+      if (this.index == 0) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelected2() {
+      if (this.index === 1) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelected3() {
+      if (this.index === 2) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelected4() {
+      if (this.index === 3) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelectedFullScreen1() {
+      if (this.indexFullScreen == 0) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelectedFullScreen2() {
+      if (this.indexFullScreen == 1) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelectedFullScreen3() {
+      if (this.indexFullScreen == 2) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
+    imgSelectedFullScreen4() {
+      if (this.indexFullScreen == 3) {
+        return "opacity: .5; outline: 3px solid hsl(26, 100%, 55%);"
+      }
+    },
   }
 }
 </script>
@@ -219,6 +328,7 @@ body {
 
 .window {
   padding: 3vw 7vw;
+  position: relative;
 }
 
 .header {
@@ -357,7 +467,7 @@ body {
   gap: 1vw;
 }
 
-.total-price{
+.total-price {
   color: hsl(220, 13%, 13%);
   font-weight: 700;
 }
@@ -408,10 +518,13 @@ body {
   border-radius: 10px;
   display: flex;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .thumb-img {
   width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 .card-preview {
@@ -425,11 +538,7 @@ body {
   width: 8.5vw;
   border-radius: 10px;
   cursor: pointer;
-}
-
-.preview:hover {
-  opacity: .5;
-  outline: 3px solid hsl(26, 100%, 55%);
+  background-color: black;
 }
 
 .product-info {
@@ -522,6 +631,81 @@ button:hover {
 
 }
 
+.container-full-screen {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+}
+
+.view {
+  width: 35vw;
+  padding-top: 10vh;
+  height: auto;
+  position: relative;
+}
+
+.next-full-screen,
+.previous-full-screen {
+  position: absolute;
+  top: 45vh;
+  background-color: white;
+  padding: 1vh;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5em;
+  user-select: none;
+}
+
+.next-full-screen {
+  right: -1.4vw;
+}
+
+.previous-full-screen {
+  left: -1.4vw;
+}
+
+.next-full-screen:hover,
+.previous-full-screen:hover {
+  color: hsl(26, 100%, 55%);
+  transition: ease-in-out;
+}
+
+.mini-view {
+  margin-top: 3vh;
+  display: flex;
+  height: 15vh;
+  gap: 1.9vw;
+}
+
+.mini-view img {
+  width: auto;
+}
+
+.close-full-screen {
+  position: absolute;
+  color: white;
+  right: 30vw;
+  top: 29vh;
+  cursor: pointer;
+  font-size: 2em;
+}
+
+.close-full-screen:hover {
+  color: hsl(26, 100%, 55%);
+  transition: ease-in-out;
+}
+
+img {
+  user-select: none;
+}
+
+
 @media screen and (max-width:1000px) {
   .window {
     padding: 2vh 0;
@@ -590,12 +774,12 @@ button:hover {
     top: 0.5vh;
   }
 
-  .product-container{
+  .product-container {
     width: 100%;
     gap: 3vw;
   }
 
-  .product-in-cart{
+  .product-in-cart {
     gap: 3vw;
   }
 
@@ -608,10 +792,14 @@ button:hover {
   }
 
   .big-card {
-    border-radius: 0;
+    border-radius: none;
     position: relative;
     display: flex;
     align-items: center;
+  }
+
+  .thumb-img{
+    border-radius: none;
   }
 
   .previous,
@@ -671,5 +859,8 @@ button:hover {
     justify-content: center;
     align-items: center;
     gap: 3vw;
+  }
+  .container-full-screen{
+    display: none;
   }
 }</style>
