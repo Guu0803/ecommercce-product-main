@@ -1,5 +1,5 @@
 <template>
-  <div class="window" :style="darkenWindow()" v-on:click="closeCart()">
+  <div class="window" v-on:click="closeCart()">
     <div class="header">
       <div class="header-left-container">
         <img src="@/assets/icon-menu.svg" alt="menu mobile" class="icone-menu-mobile" v-on:click="showMenu()">
@@ -147,6 +147,8 @@
         </div>
       </div>
     </div>
+    <div class="darken" v-if="menu === true">
+    </div>
   </div>
 </template>
 <script>
@@ -210,11 +212,7 @@ export default {
         return "display:none;"
       }
     },
-    darkenWindow() {
-      if (this.menu === true) {
-        return "background-color: rgba(0,0,0, 0.8);"
-      }
-    },
+    
     btnMinus() {
       this.unitCounter--
     },
@@ -329,6 +327,17 @@ body {
 .window {
   padding: 3vw 7vw;
   position: relative;
+}
+
+.darken {
+  position: absolute;
+  background-color: rgba(0,0,0, 0.7);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
 }
 
 .header {
