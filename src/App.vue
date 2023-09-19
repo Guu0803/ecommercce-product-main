@@ -207,12 +207,11 @@ export default {
     },
     menuStyle() {
       if (this.menu === true) {
-        return "background-color: white;width: 50%;height: 100vh;position:absolute;top: 0;left: 0; padding: 8vh 5vw; z-index:2;"
+        return "background-color: white;width: 50%;height: 100%;position:absolute;top: 0;left: 0; padding: 8vh 5vw; z-index:2;box-sizing:border-box"
       } else {
         return "display:none;"
       }
     },
-    
     btnMinus() {
       this.unitCounter--
     },
